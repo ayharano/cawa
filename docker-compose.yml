@@ -29,6 +29,9 @@ services:
     command: uvicorn --host 0.0.0.0 cawa.main:app
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgrespw@database:5432/cawadb
+      SECRET_KEY: "this actually should be a better secret, but it works"
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 15
       DEBUG: 1
     volumes:
       - ./src:/app/cawa
