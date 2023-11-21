@@ -1,14 +1,8 @@
 from sqlalchemy import UniqueConstraint
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy_utils import Timestamp, generic_repr
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy_utils import generic_repr
 
-
-class Base(DeclarativeBase):
-    pass
-
-
-class TimestampedBase(Base, Timestamp):
-    __abstract__ = True
+from .base import TimestampedBase
 
 
 @generic_repr
