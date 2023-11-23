@@ -83,6 +83,35 @@ def test_can_create_duplicate_address(session):
     assert count == 2
 
 
+def test_address_instance_cannot_simultaneously_relate_to_a_customer_and_a_warehouse(session):
+    warehouse = Warehouse(
+        code='airport-usa-nynj-jfk',
+    )
+    session.add(warehouse)
+    session.commit()
+    session.refresh(warehouse)
+
+    customer = Customer(
+        full_name='Viktor Navorski',
+    )
+    session.add(customer)
+    session.commit()
+    session.refresh(customer)
+
+    address = Address(
+        address='John F. Kennedy International Airport',
+        city='',
+        state='',
+        country='USA',
+        postal_code='',
+        customer=customer,
+        warehouse=warehouse,
+    )
+    session.add(address)
+    with pytest.raises(IntegrityError):
+        session.commit()
+
+
 def test_address_instance_is_deleted_when_related_customer_instance_is_deleted(session):
     address = Address(
         address='1600 Pennsylvania Avenue',

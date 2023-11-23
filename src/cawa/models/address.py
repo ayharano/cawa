@@ -20,6 +20,12 @@ class Address(TimestampedBase):
             " AND TRIM( postal_code ) LIKE ''"
             ")"
         ),
+        CheckConstraint(
+            "NOT("
+            " customer_id"
+            " AND warehouse_id"
+            ")"
+        ),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
