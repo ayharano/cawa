@@ -7,6 +7,7 @@ from sqlalchemy.pool import StaticPool
 from cawa.database import get_session
 from cawa.main import app
 from cawa.models import Base
+from cawa.routers import CURRENT_TOKEN_URL
 from cawa.security import get_password_hash
 from tests.factories import UserFactory
 
@@ -49,3 +50,15 @@ def user(session):
     user.clean_password = password
 
     return user
+
+
+@pytest.fixture
+def token(client, user):
+    response = client.post(
+        CURRENT_TOKEN_URL,
+        data={
+            'username': user.username,
+            'password': user.clean_password,
+        },
+    )
+    return response.json()['access_token']

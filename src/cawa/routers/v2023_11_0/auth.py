@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 from cawa.database import get_session
 from cawa.models import User
 from cawa.schemas import Token
-from cawa.security import create_access_token, verify_password
+from cawa.security import (
+    create_access_token,
+    get_current_active_user,
+    verify_password,
+)
 
 
 router = APIRouter(prefix='/auth', tags=['token'])
@@ -42,3 +46,10 @@ def login_for_access_token(form_data: OAuth2Form, session: Session):
     access_token = create_access_token(data={'sub': user.username})
 
     return {'access_token': access_token, 'token_type': 'bearer'}
+
+
+@router.post('/refresh-token', response_model=Token)
+def refresh_access_token(user: Annotated[User, Depends(get_current_active_user)]):
+    new_access_token = create_access_token(data={'sub': user.username})
+
+    return {'access_token': new_access_token, 'token_type': 'bearer'}
