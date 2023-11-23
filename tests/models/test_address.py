@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
-from cawa.models import Address
+from cawa.models import Address, Customer
 
 
 def test_create_and_retrieve_address(session):
@@ -81,3 +81,39 @@ def test_can_create_duplicate_address(session):
     )
 
     assert count == 2
+
+
+def test_address_instance_is_deleted_when_related_customer_instance_is_deleted(session):
+    address = Address(
+        address='1600 Pennsylvania Avenue',
+        city='Washington',
+        state='DC',
+        country='USA',
+        postal_code='20500',
+    )
+    session.add(address)
+    session.commit()
+    session.refresh(address)
+
+    customer = Customer(
+        full_name='Barack Obama',
+        address=address,
+    )
+    session.add(customer)
+    session.commit()
+    session.refresh(customer)
+
+    count_before_delete = session.scalar(
+        select(func.count('*'))
+        .select_from(Address)
+    )
+    assert count_before_delete == 1
+
+    session.delete(customer)
+    session.commit()
+
+    count_after_delete = session.scalar(
+        select(func.count('*'))
+        .select_from(Address)
+    )
+    assert count_after_delete == 0

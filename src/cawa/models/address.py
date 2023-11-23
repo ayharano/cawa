@@ -1,4 +1,6 @@
-from sqlalchemy import CheckConstraint, String
+from typing import Optional
+
+from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import generic_repr
 
@@ -32,3 +34,6 @@ class Address(TimestampedBase):
         cascade='all, delete-orphan',
         single_parent=True,
     )
+
+    customer_id: Mapped[int | None] = mapped_column(ForeignKey('customer.id'))
+    customer: Mapped[Optional['Customer']] = relationship(back_populates='address')
