@@ -37,3 +37,6 @@ class Address(TimestampedBase):
 
     customer_id: Mapped[int | None] = mapped_column(ForeignKey('customer.id'))
     customer: Mapped[Optional['Customer']] = relationship(back_populates='address')
+
+    warehouse_id: Mapped[int | None] = mapped_column(ForeignKey('warehouse.id'))
+    warehouse: Mapped[Optional['Warehouse']] = relationship(back_populates='address')

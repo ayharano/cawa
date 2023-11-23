@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
-from cawa.models import Address, Customer
+from cawa.models import Address, Customer, Warehouse
 
 
 def test_create_and_retrieve_address(session):
@@ -110,6 +110,42 @@ def test_address_instance_is_deleted_when_related_customer_instance_is_deleted(s
     assert count_before_delete == 1
 
     session.delete(customer)
+    session.commit()
+
+    count_after_delete = session.scalar(
+        select(func.count('*'))
+        .select_from(Address)
+    )
+    assert count_after_delete == 0
+
+
+def test_address_instance_is_deleted_when_related_warehouse_instance_is_deleted(session):
+    address = Address(
+        address='Port of Long Beach',
+        city='Long Beach',
+        state='CA',
+        country='USA',
+        postal_code='',
+    )
+    session.add(address)
+    session.commit()
+    session.refresh(address)
+
+    warehouse = Warehouse(
+        code='port-usa-ca-long-beach',
+        address=address,
+    )
+    session.add(warehouse)
+    session.commit()
+    session.refresh(warehouse)
+
+    count_before_delete = session.scalar(
+        select(func.count('*'))
+        .select_from(Address)
+    )
+    assert count_before_delete == 1
+
+    session.delete(warehouse)
     session.commit()
 
     count_after_delete = session.scalar(
