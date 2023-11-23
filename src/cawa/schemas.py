@@ -18,7 +18,15 @@ def strip_string(raw: str) -> str:
     return raw.strip()
 
 
+def non_empty_trimmed_string(trimmed: str) -> str:
+    if trimmed == '':
+        raise ValueError('must not be empty or contain only whitespace characters')
+    return trimmed
+
+
+
 TrimmedString = Annotated[str, AfterValidator(strip_string)]
+NonEmptyTrimmedString = Annotated[TrimmedString, AfterValidator(non_empty_trimmed_string)]
 
 
 class AddressSchema(BaseModel):
@@ -40,3 +48,11 @@ class AddressSchema(BaseModel):
         if not any(fields):
             raise ValueError('at least one of the Address fields must be filled in')
         return self
+
+
+class CustomerSchema(AddressSchema):
+    full_name: NonEmptyTrimmedString
+
+
+class CustomerPublic(CustomerSchema):
+    id: int
