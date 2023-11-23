@@ -1,5 +1,5 @@
 from sqlalchemy import CheckConstraint, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utils import generic_repr
 
 from .base import TimestampedBase
@@ -26,3 +26,9 @@ class Address(TimestampedBase):
     state: Mapped[str] = mapped_column(String(1023))
     country: Mapped[str] = mapped_column(String(255))
     postal_code: Mapped[str] = mapped_column(String(15))
+
+    location: Mapped['Location'] = relationship(
+        back_populates='address',
+        cascade='all, delete-orphan',
+        single_parent=True,
+    )
