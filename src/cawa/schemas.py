@@ -56,3 +56,11 @@ class CustomerSchema(AddressSchema):
 
 class CustomerPublic(CustomerSchema):
     id: int
+
+
+class WarehouseSchema(AddressSchema):
+    code: NonEmptyTrimmedString
+
+
+class WarehousePublic(WarehouseSchema):
+    id: int

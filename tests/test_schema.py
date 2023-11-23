@@ -1,7 +1,7 @@
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from cawa.schemas import AddressSchema, CustomerSchema, TrimmedString
+from cawa.schemas import AddressSchema, CustomerSchema, TrimmedString, WarehouseSchema
 
 
 def test_trimmedstring():
@@ -60,6 +60,35 @@ def test_customerschema_does_not_accept_whitespace_only_full_name_value():
         CustomerSchema(
             full_name='\r\n\f\v \r\n',
             address='Pacific Ocean',
+            city='',
+            state='',
+            country='',
+            postal_code='',
+        )
+
+
+def test_warehouse():
+    schema = WarehouseSchema(
+        code='\t\f\v port-usa-ca-losangeles\r\n ',
+        address='  Port of Los Angeles\t\n',
+        city='\nLos Angeles\t',
+        state='  CA ',
+        country='\r\nUSA\r\n',
+        postal_code='\t \n',
+    )
+    assert schema.code == 'port-usa-ca-losangeles'
+    assert schema.address == 'Port of Los Angeles'
+    assert schema.city == 'Los Angeles'
+    assert schema.state == 'CA'
+    assert schema.country == 'USA'
+    assert schema.postal_code == ''
+
+
+def test_warehouseschema_does_not_accept_whitespace_only_code_value():
+    with pytest.raises(ValidationError):
+        WarehouseSchema(
+            full_name='\r\n  \r\n\f\v ',
+            address='Atlantic Ocean',
             city='',
             state='',
             country='',
