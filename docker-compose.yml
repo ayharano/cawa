@@ -1,0 +1,39 @@
+volumes:
+  postgresql-data:
+
+services:
+  database:
+    image: postgres:16
+    restart: always
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: cawadb
+      POSTGRES_PASSWORD: postgrespw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  web:
+    container_name: cawa
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: web
+    command: uvicorn --host 0.0.0.0 cawa.main:app
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgrespw@database:5432/cawadb
+      DEBUG: 1
+    volumes:
+      - ./src:/app/cawa
+    ports:
+      - "8000:8000"
+    depends_on:
+      database:
+        condition: service_healthy
