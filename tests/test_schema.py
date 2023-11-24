@@ -1,7 +1,16 @@
+import json
+from decimal import Decimal
+
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from cawa.schemas import AddressSchema, CustomerSchema, TrimmedString, WarehouseSchema
+from cawa.schemas import (
+    AddressSchema,
+    CustomerSchema,
+    DistanceSchema,
+    TrimmedString,
+    WarehouseSchema,
+)
 
 
 def test_trimmedstring():
@@ -94,3 +103,23 @@ def test_warehouseschema_does_not_accept_whitespace_only_code_value():
             country='',
             postal_code='',
         )
+
+
+def test_distance():
+    schema = DistanceSchema(
+        kilometers=123456.78901,
+        miles=109876.54321,
+    )
+    assert schema.kilometers == Decimal('123456.789')
+    assert schema.miles == Decimal('109876.543')
+
+
+def test_distance_json():
+    schema = DistanceSchema(
+        kilometers=123456.78901,
+        miles=109876.54321,
+    )
+    json_str = schema.model_dump_json()
+    json_ = json.loads(json_str)
+    assert json_['kilometers'] == '123456.789'
+    assert json_['miles'] == '109876.543'
