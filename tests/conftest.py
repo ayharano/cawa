@@ -7,6 +7,8 @@ from sqlalchemy.pool import StaticPool
 from cawa.database import get_session
 from cawa.main import app
 from cawa.models import Base
+from cawa.security import get_password_hash
+from tests.factories import UserFactory
 
 
 @pytest.fixture
@@ -32,3 +34,18 @@ def client(session):
         yield client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def user(session):
+    password = 'not very safe plain text password'
+    user = UserFactory(password=get_password_hash(password))
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    # Python allows assigning new attributes, so we use this for password testing
+    user.clean_password = password
+
+    return user
