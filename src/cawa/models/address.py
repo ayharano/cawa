@@ -22,8 +22,8 @@ class Address(TimestampedBase):
         ),
         CheckConstraint(
             "NOT("
-            " customer_id"
-            " AND warehouse_id"
+            " customer_id IS NOT NULL"
+            " AND warehouse_id IS NOT NULL"
             ")"
         ),
     )
