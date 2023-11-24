@@ -30,6 +30,18 @@ RUN pip install --no-cache-dir --upgrade pip build setuptools \
     && pip install --no-cache-dir tzdata
 
 
+FROM base as migrations
+
+WORKDIR ${APP_HOME}
+
+COPY alembic.ini .
+COPY migrations ./migrations/
+
+ENV PYTHONPATH='cawa'
+
+CMD ["alembic", "upgrade", "head"]
+
+
 FROM base as web
 
 WORKDIR ${APP_HOME}/cawa
