@@ -38,6 +38,7 @@ dependencies = [
 test = [
     "pytest >=7.4.3,<7.5",
     "pytest-cov >=4.1.0,<4.2",
+    "pytest-recording >=0.13.0,<0.14",
     "factory-boy >=3.3.0,<3.4",
     "time-machine >=2.13.0,<2.14",
 ]
